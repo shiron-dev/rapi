@@ -54,8 +54,6 @@ func initConfig() {
 		fmt.Println("Error reading config file:", err)
 		os.Exit(1)
 	}
-
-	fmt.Printf("%+v\n", cfg.Config)
 }
 
 func presistPreRun(cmd *cobra.Command, args []string) {
