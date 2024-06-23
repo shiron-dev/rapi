@@ -7,6 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/shiron-dev/rapi/utils"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -17,9 +19,7 @@ var rootCmd = &cobra.Command{
 
 Like a package manager, you can use only the parts you need from a scrap of templates hosted in another location.
 When a dependent template is updated, Rapi will notify you of the update.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	PersistentPreRun: presistPreRun,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -40,18 +40,52 @@ func init() {
 }
 
 func initConfig() {
-	wd, err := os.Getwd()
-	cobra.CheckErr(err)
+	wr, _ := utils.GetRapiWorkingDir()
 
-	viper.AddConfigPath(filepath.Join(wd, ".rapi"))
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("rapi")
+	viper.AddConfigPath(filepath.Join(wr, utils.RAPI_DIR))
+	viper.SetConfigType(utils.RAPI_CONFIG_TYPE)
+	viper.SetConfigName(utils.RAPI_CONFIG_NAME)
 
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	} else {
-		fmt.Fprintln(os.Stderr, "Config file not found")
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if `init` command is called
+		} else {
+			// Config file was found but another error was produced
+			fmt.Println("Error reading config file:", err)
+			os.Exit(1)
+		}
 	}
+}
+
+func presistPreRun(cmd *cobra.Command, args []string) {
+	if cmd.Name() == "init" || isHelpCommand(cmd, args) {
+		return
+	}
+
+	wd, _ := os.Getwd()
+	cfgPath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	if _, err := os.Stat(cfgPath); err != nil {
+		fmt.Fprintln(os.Stderr, "No config file found.")
+		fmt.Fprintln(os.Stderr, "Please run `rapi init` to create a new config file.")
+		os.Exit(1)
+	}
+}
+
+func isHelpCommand(cmd *cobra.Command, args []string) bool {
+	if cmd.Name() == "help" {
+		return true
+	}
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			return true
+		}
+	}
+	if help, _ := cmd.Flags().GetBool("help"); help {
+		return true
+	}
+	return false
 }
