@@ -10,11 +10,16 @@ import (
 )
 
 type RapiDependenciesConfig struct {
-	path   string
-	follow bool
+	Path       string
+	Follow     bool
+	AutoUpdate bool
+	NoParam    bool
 }
 type RapiNameDependencies map[string]RapiDependenciesConfig
-type RapiDependencies map[string]RapiNameDependencies
+type RapiDependency struct {
+	Alias     string
+	Templates RapiNameDependencies
+}
 
 type RapiPackageConfig struct {
 	Name        string
@@ -31,7 +36,7 @@ type RapiCLIConfig struct {
 type RapiConfig struct {
 	Package      RapiPackageConfig
 	Rapi         RapiCLIConfig
-	Dependencies RapiDependencies
+	Dependencies map[string]RapiDependency
 }
 
 var Config *RapiConfig = nil
