@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
+
+	"github.com/shiron-dev/rapi/utils"
 )
 
 type RapiDependenciesConfig struct {
@@ -21,6 +23,7 @@ type RapiPackageConfig struct {
 	Version     string
 	Description string
 	License     string
+	Recipe      string
 }
 type RapiCLIConfig struct {
 	RapiVersion string
@@ -52,6 +55,7 @@ func NewConfig() (*RapiConfig, error) {
 		Package: RapiPackageConfig{
 			Name:    filepath.Base(wd),
 			Version: "0.1.0",
+			Recipe:  filepath.Join(utils.RAPI_DIR, utils.RAPI_RECIPE_DIR),
 		},
 		Rapi: RapiCLIConfig{
 			RapiVersion: "0.1.0", // TODO: get version from rapi

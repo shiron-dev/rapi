@@ -5,6 +5,7 @@ package:
   version: "{{.Package.Version}}"
   description: "{{.Package.Description}}"
   license: "{{.Package.License}}"
+  recipe: "{{.Package.Recipe}}"
 rapi:
   version: "{{.Rapi.RapiVersion}}"
 
