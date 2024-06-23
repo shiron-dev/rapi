@@ -49,6 +49,7 @@ func run(cmd *cobra.Command, args []string) {
 		Version     string
 		Description string
 		License     string
+		RapiVersion string
 	}
 	packageData := &PackageData{
 		Name:        filepath.Base(wd),
@@ -57,6 +58,7 @@ func run(cmd *cobra.Command, args []string) {
 		Version:     "0.1.0",
 		Description: "",
 		License:     "",
+		RapiVersion: "0.1.0", // TODO: get rapi version
 	}
 
 	tmpl.Execute(writer, packageData)

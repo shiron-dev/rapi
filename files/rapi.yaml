@@ -5,5 +5,7 @@ package:
   version: "{{.Version}}"
   description: "{{.Description}}"
   license: "{{.License}}"
+rapi:
+  version: "{{.RapiVersion}}"
 
 dependencies:
