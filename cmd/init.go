@@ -9,6 +9,7 @@ import (
 
 	"github.com/shiron-dev/rapi/files"
 	"github.com/shiron-dev/rapi/utils"
+	"github.com/shiron-dev/rapi/utils/cfg"
 	"github.com/spf13/cobra"
 )
 
@@ -42,26 +43,11 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	writer := new(strings.Builder)
 
-	type PackageData struct {
-		Name        string
-		Author      string
-		URL         string
-		Version     string
-		Description string
-		License     string
-		RapiVersion string
+	newCfg, err := cfg.NewConfig()
+	if err != nil {
+		panic(err)
 	}
-	packageData := &PackageData{
-		Name:        filepath.Base(wd),
-		Author:      "",
-		URL:         "",
-		Version:     "0.1.0",
-		Description: "",
-		License:     "",
-		RapiVersion: "0.1.0", // TODO: get rapi version
-	}
-
-	tmpl.Execute(writer, packageData)
+	tmpl.Execute(writer, newCfg)
 
 	fmt.Println("Wrote to", cfgPath)
 

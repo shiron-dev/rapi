@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/shiron-dev/rapi/utils"
+	"github.com/shiron-dev/rapi/utils/cfg"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -41,24 +41,21 @@ func init() {
 
 func initConfig() {
 	wr, _ := utils.GetRapiWorkingDir()
+	cfgPath := filepath.Join(wr, utils.RAPI_DIR, utils.RAPI_CONFIG)
 
-	viper.AddConfigPath(filepath.Join(wr, utils.RAPI_DIR))
-	viper.SetConfigType(utils.RAPI_CONFIG_TYPE)
-	viper.SetConfigName(utils.RAPI_CONFIG_NAME)
-
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	} else {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; ignore error if `init` command is called
-		} else {
-			// Config file was found but another error was produced
-			fmt.Println("Error reading config file:", err)
-			os.Exit(1)
-		}
+	cfgData, err := os.ReadFile(cfgPath)
+	if err != nil {
+		return
 	}
+
+	if err := cfg.LoadConfig(cfgData); err == nil {
+		fmt.Fprintln(os.Stderr, "Using config file:", cfgPath)
+	} else {
+		fmt.Println("Error reading config file:", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("%+v\n", cfg.Config)
 }
 
 func presistPreRun(cmd *cobra.Command, args []string) {

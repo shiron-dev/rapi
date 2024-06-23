@@ -1,11 +1,11 @@
 package:
-  name: "{{.Name}}"
-  author: "{{.Author}}"
-  url: "{{.URL}}"
-  version: "{{.Version}}"
-  description: "{{.Description}}"
-  license: "{{.License}}"
+  name: "{{.Package.Name}}"
+  author: "{{.Package.Author}}"
+  url: "{{.Package.URL}}"
+  version: "{{.Package.Version}}"
+  description: "{{.Package.Description}}"
+  license: "{{.Package.License}}"
 rapi:
-  version: "{{.RapiVersion}}"
+  version: "{{.Rapi.RapiVersion}}"
 
 dependencies:
