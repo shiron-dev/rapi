@@ -1,0 +1,9 @@
+package:
+  name: "{{.Name}}"
+  author: "{{.Author}}"
+  url: "{{.URL}}"
+  version: "{{.Version}}"
+  description: "{{.Description}}"
+  license: "{{.License}}"
+
+dependencies:
