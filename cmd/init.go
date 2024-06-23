@@ -17,14 +17,14 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Set up Rapi in the current directory",
-	Run:   run,
+	Run:   runInit,
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
 }
 
-func run(cmd *cobra.Command, args []string) {
+func runInit(cmd *cobra.Command, args []string) {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
