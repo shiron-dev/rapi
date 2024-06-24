@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func GetRapiWorkingDir() (string, error) {
@@ -24,4 +25,20 @@ func GetRapiWorkingDir() (string, error) {
 		dir = parent
 	}
 	return dir, err
+}
+
+func GetOriginName(origin string) (string, string) {
+	// TODO: aliaの考慮
+	parsed := strings.Split(origin, "/")
+	for i, p := range parsed {
+		if strings.Contains(p, ".") {
+			path := strings.Join(parsed[i+1:], "/")
+			return p + "/" + path, path
+		}
+	}
+	return ORIGIN_DEFAULT_HOST + "/" + origin, origin
+}
+
+func OriginToUrl(origin string) string {
+	return "https://" + origin
 }

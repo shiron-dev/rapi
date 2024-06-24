@@ -2,7 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/shiron-dev/rapi/core"
+	"github.com/shiron-dev/rapi/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -18,5 +21,32 @@ func init() {
 }
 
 func runUse(cmd *cobra.Command, args []string) {
-	fmt.Println("use called")
+	const (
+		all = iota
+		auto
+		local
+	)
+	mode, err := func() (uint, error) {
+		switch len(args) {
+		case 0:
+			return all, nil
+		case 2:
+			return auto, nil
+		case 3:
+			return local, nil
+		}
+		return 0, fmt.Errorf("invalid arguments")
+	}()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Println(mode)
+
+	originPath, originAlias := utils.GetOriginName(args[0])
+
+	if mode == local {
+		core.AddUseTemplate(originPath, args[1], args[2])
+	}
+	println(originPath, originAlias)
 }

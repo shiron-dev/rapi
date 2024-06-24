@@ -17,8 +17,8 @@ type RapiDependenciesConfig struct {
 }
 type RapiNameDependencies map[string]RapiDependenciesConfig
 type RapiDependency struct {
-	Alias     string
-	Templates RapiNameDependencies
+	Alias    string
+	Template RapiNameDependencies
 }
 
 type RapiPackageConfig struct {
@@ -48,6 +48,21 @@ func LoadConfig(data []byte) error {
 		Config = &config
 	}
 	return err
+}
+
+func SaveConfig() error {
+	data, err := yaml.Marshal(Config)
+	if err != nil {
+		return err
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	cfgPath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	return os.WriteFile(cfgPath, data, 0644)
 }
 
 func NewConfig() (*RapiConfig, error) {

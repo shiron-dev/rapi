@@ -64,4 +64,14 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 	println("\n" + writer.String())
 
+	ignorePath := filepath.Join(wd, utils.RAPI_DIR, ".gitignore")
+	f, err = os.Create(ignorePath)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	if _, err := f.Write([]byte(files.GitIgnore)); err != nil {
+		panic(err)
+	}
+
 }
