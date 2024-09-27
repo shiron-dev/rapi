@@ -7,6 +7,7 @@ import (
 	"github.com/google/wire"
 	"github.com/shiron-dev/rapi/internal/adapter/repository"
 	"github.com/shiron-dev/rapi/internal/infrastructure/infra"
+	"github.com/shiron-dev/rapi/internal/usecase"
 )
 
 // Adapter
@@ -22,4 +23,6 @@ var infrastructureSet = wire.NewSet(
 )
 
 // Usecase
-var usecaseSet = wire.NewSet()
+var usecaseSet = wire.NewSet(
+	usecase.NewConfigUsecaseImpl,
+)

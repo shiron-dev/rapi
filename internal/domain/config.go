@@ -1,4 +1,4 @@
-package model
+package domain
 
 type RapiDependenciesConfig struct {
 	Name       string
@@ -28,4 +28,17 @@ type RapiConfig struct {
 	Package      RapiPackageConfig
 	Rapi         RapiCLIConfig
 	Dependencies []RapiDependency
+}
+
+func NewRapiConfig(rapiName string) *RapiConfig {
+	return &RapiConfig{
+		Package: RapiPackageConfig{
+			Name:    rapiName,
+			Version: "0.0.1",
+		},
+		Rapi: RapiCLIConfig{
+			RapiVersion: RapiCLIVersion,
+		},
+		Dependencies: []RapiDependency{},
+	}
 }
