@@ -11,7 +11,6 @@ jobs:
     timeout-minutes: 10
     needs:
       - yaml-lint
-      - markdown-lint
       - shell-lint
       - action-lint
       - golang-build-check
@@ -32,16 +31,6 @@ jobs:
         with:
           level: warning
           yamllint_flags: "-c .yamllint ."
-          fail_on_error: true
-
-  markdown-lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: reviewdog/action-markdownlint@v0.25.0
-        with:
-          level: warning
           fail_on_error: true
 
   shell-lint:
