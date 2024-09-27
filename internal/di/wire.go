@@ -15,11 +15,13 @@ var cmdSet = wire.NewSet()
 
 var repositorySet = wire.NewSet(
 	repository.NewFilesRepositoryImpl,
+	repository.NewLoggerRepositoryImpl,
 )
 
 // Infrastructure
 var infrastructureSet = wire.NewSet(
 	infra.NewFilesInterfaceImpl,
+	infra.NewLoggerInterfaceImpl,
 )
 
 // Usecase
