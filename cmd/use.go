@@ -41,12 +41,12 @@ func runUse(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Println(mode)
+	fmt.Println("func runUse:", "mode", mode)
 
 	originPath, originAlias := utils.GetOriginName(args[0])
 
 	if mode == local {
 		core.AddUseTemplate(originPath, args[1], args[2])
 	}
-	println(originPath, originAlias)
+	println("func runUse:", originPath, originAlias)
 }
