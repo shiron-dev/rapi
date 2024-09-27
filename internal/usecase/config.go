@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"errors"
 	"path"
 
-	"github.com/kataras/iris/v12/x/errors"
 	"github.com/shiron-dev/rapi/internal/adapter/repository"
 	"github.com/shiron-dev/rapi/internal/domain"
 )
