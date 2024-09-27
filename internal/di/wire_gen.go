@@ -20,10 +20,12 @@ func InitializeControllerSet() (*ControllersSet, error) {
 	filesInterface := infra.NewFilesInterface()
 	filesRepository := repository.NewFilesRepository(filesInterface)
 	configUsecase := usecase.NewConfigUsecase(filesRepository)
+	filesUsecase := usecase.NewFilesUsecase(filesRepository)
 	loggerInterface := infra.NewLoggerInterface()
 	loggerRepository := repository.NewLoggerRepository(loggerInterface)
 	loggerUsecase := usecase.NewLoggerUsecase(loggerRepository)
-	controllerController := controller.NewController(configUsecase, loggerUsecase)
+	coreUsecase := usecase.NewCoreUsecase(configUsecase, filesUsecase, loggerUsecase)
+	controllerController := controller.NewController(coreUsecase, configUsecase, loggerUsecase, filesUsecase)
 	controllersSet := &ControllersSet{
 		Controller: controllerController,
 	}
@@ -41,7 +43,7 @@ var controllerSet = wire.NewSet(controller.NewController)
 var infrastructureSet = wire.NewSet(infra.NewFilesInterface, infra.NewLoggerInterface)
 
 // Usecase
-var usecaseSet = wire.NewSet(usecase.NewConfigUsecase, usecase.NewLoggerUsecase)
+var usecaseSet = wire.NewSet(usecase.NewCoreUsecase, usecase.NewConfigUsecase, usecase.NewFilesUsecase, usecase.NewLoggerUsecase)
 
 type ControllersSet struct {
 	Controller controller.Controller

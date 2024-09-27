@@ -18,6 +18,7 @@ type FilesRepository interface {
 	GetWD() (string, error)
 	LoadConfig() (*domain.RapiConfig, error)
 	SaveConfig(config domain.RapiConfig) error
+	WriteFileRapiDir(filename string, data []byte) (string, error)
 }
 
 type FilesRepositoryImpl struct {
@@ -85,4 +86,24 @@ func (c *FilesRepositoryImpl) SaveConfig(config domain.RapiConfig) error {
 
 	path := filepath.Join(rapiPath, ConfigFileName)
 	return c.files.WriteFile(path, data, 0644)
+}
+
+func (c *FilesRepositoryImpl) WriteFileRapiDir(filename string, data []byte) (string, error) {
+	rapiPath, err := c.getRapiDir()
+	if err != nil {
+		return "", err
+	}
+
+	err = c.files.MkdirAll(rapiPath, 0755)
+	if err != nil {
+		return "", err
+	}
+
+	path := filepath.Join(rapiPath, filename)
+	err = c.files.WriteFile(path, data, 0644)
+	if err != nil {
+		return "", err
+	}
+
+	return path, nil
 }

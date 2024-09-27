@@ -29,7 +29,9 @@ var infrastructureSet = wire.NewSet(
 
 // Usecase
 var usecaseSet = wire.NewSet(
+	usecase.NewCoreUsecase,
 	usecase.NewConfigUsecase,
+	usecase.NewFilesUsecase,
 	usecase.NewLoggerUsecase,
 )
 

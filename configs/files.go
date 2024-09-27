@@ -1,9 +1,6 @@
-package files
+package configs
 
 import _ "embed"
 
-//go:embed rapi.yaml
-var RapiYaml []byte
-
-// go:embed .gitignore
+//go:embed .gitignore
 var GitIgnore []byte
