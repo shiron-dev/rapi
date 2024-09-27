@@ -12,40 +12,38 @@ import (
 )
 
 // Adapter
-var cmdSet = wire.NewSet()
-
 var repositorySet = wire.NewSet(
-	repository.NewFilesRepositoryImpl,
-	repository.NewLoggerRepositoryImpl,
+	repository.NewFilesRepository,
+	repository.NewLoggerRepository,
 )
 
 var controllerSet = wire.NewSet(
-	controller.NewControllerImpl,
+	controller.NewController,
 )
 
 // Infrastructure
 var infrastructureSet = wire.NewSet(
-	infra.NewFilesInterfaceImpl,
-	infra.NewLoggerInterfaceImpl,
+	infra.NewFilesInterface,
+	infra.NewLoggerInterface,
 )
 
 // Usecase
 var usecaseSet = wire.NewSet(
-	usecase.NewConfigUsecaseImpl,
+	usecase.NewConfigUsecase,
+	usecase.NewLoggerUsecase,
 )
 
-type ControllerSet struct {
-	ControllerImpl *controller.ControllerImpl
+type ControllersSet struct {
+	Controller controller.Controller
 }
 
-func InitializeControllerSet() (*ControllerSet, error) {
+func InitializeControllerSet() (*ControllersSet, error) {
 	wire.Build(
-		cmdSet,
 		repositorySet,
 		controllerSet,
 		infrastructureSet,
 		usecaseSet,
-		wire.Struct(new(ControllerSet), "*"),
+		wire.Struct(new(ControllersSet), "*"),
 	)
-	return &ControllerSet{}, nil
+	return nil, nil
 }

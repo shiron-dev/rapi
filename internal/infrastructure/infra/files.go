@@ -4,10 +4,18 @@ import (
 	"os"
 )
 
+type FilesInterface interface {
+	GetWD() (string, error)
+	Exists(path string) bool
+	MkdirAll(path string, perm os.FileMode) error
+	ReadFile(path string) ([]byte, error)
+	WriteFile(path string, data []byte, perm os.FileMode) error
+}
+
 type FilesInterfaceImpl struct{}
 
-func NewFilesInterfaceImpl() FilesInterfaceImpl {
-	return FilesInterfaceImpl{}
+func NewFilesInterface() FilesInterface {
+	return &FilesInterfaceImpl{}
 }
 
 func (f *FilesInterfaceImpl) GetWD() (string, error) {

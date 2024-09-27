@@ -2,4 +2,5 @@ package cmd
 
 import "github.com/shiron-dev/rapi/internal/di"
 
-var controller, err = di.InitializeControllerSet()
+var controllersSet, _ = di.InitializeControllerSet()
+var controller = controllersSet.Controller

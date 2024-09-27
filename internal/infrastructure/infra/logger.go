@@ -2,9 +2,15 @@ package infra
 
 import "fmt"
 
+type LoggerInterface interface {
+	Info(format string, args ...interface{})
+	Error(format string, args ...interface{})
+	ErrorWithErr(err error)
+}
+
 type LoggerInterfaceImpl struct{}
 
-func NewLoggerInterfaceImpl() *LoggerInterfaceImpl {
+func NewLoggerInterface() LoggerInterface {
 	return &LoggerInterfaceImpl{}
 }
 

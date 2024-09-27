@@ -2,11 +2,17 @@ package repository
 
 import "github.com/shiron-dev/rapi/internal/infrastructure/infra"
 
-type LoggerRepositoryImpl struct {
-	logger *infra.LoggerInterfaceImpl
+type LoggerRepository interface {
+	Info(format string, args ...interface{})
+	Error(format string, args ...interface{})
+	ErrorWithErr(err error)
 }
 
-func NewLoggerRepositoryImpl(logger *infra.LoggerInterfaceImpl) *LoggerRepositoryImpl {
+type LoggerRepositoryImpl struct {
+	logger infra.LoggerInterface
+}
+
+func NewLoggerRepository(logger infra.LoggerInterface) LoggerRepository {
 	return &LoggerRepositoryImpl{logger: logger}
 }
 

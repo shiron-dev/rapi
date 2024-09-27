@@ -14,13 +14,19 @@ const (
 	ConfigFileName = "rapi.yaml"
 )
 
+type FilesRepository interface {
+	GetWD() (string, error)
+	LoadConfig() (*domain.RapiConfig, error)
+	SaveConfig(config domain.RapiConfig) error
+}
+
 type FilesRepositoryImpl struct {
-	files *infra.FilesInterfaceImpl
+	files infra.FilesInterface
 }
 
 var ErrorConfigNotFound = errors.New("config file not found")
 
-func NewFilesRepositoryImpl(files *infra.FilesInterfaceImpl) *FilesRepositoryImpl {
+func NewFilesRepository(files infra.FilesInterface) FilesRepository {
 	return &FilesRepositoryImpl{files: files}
 }
 

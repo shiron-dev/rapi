@@ -1,25 +1,33 @@
 package controller
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/shiron-dev/rapi/internal/usecase"
 )
 
-type ControllerImpl struct {
-	config *usecase.ConfigUsecaseImpl
+type Controller interface {
+	PresistPreRun()
 }
 
-func NewControllerImpl() *ControllerImpl {
-	return &ControllerImpl{}
+type ControllerImpl struct {
+	config usecase.ConfigUsecase
+	logger usecase.LoggerUsecase
+}
+
+func NewController(config usecase.ConfigUsecase, logger usecase.LoggerUsecase) Controller {
+	return &ControllerImpl{config: config, logger: logger}
 }
 
 func (c *ControllerImpl) PresistPreRun() {
 	isExists, err := c.config.ExistsRapiConfig()
+	if err != nil {
+		c.logger.ErrorWithErr(err)
+	}
+
 	if isExists {
-		fmt.Fprintln(os.Stderr, "No config file found.")
-		fmt.Fprintln(os.Stderr, "Please run `rapi init` to create a new config file.")
+		c.logger.Error("No config file found.")
+		c.logger.Error("Please run `rapi init` to create a new config file.")
 		os.Exit(1)
 	}
 }

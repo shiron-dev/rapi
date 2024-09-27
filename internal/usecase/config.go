@@ -8,11 +8,17 @@ import (
 	"github.com/shiron-dev/rapi/internal/domain"
 )
 
-type ConfigUsecaseImpl struct {
-	files *repository.FilesRepositoryImpl
+type ConfigUsecase interface {
+	ExistsRapiConfig() (bool, error)
+	MakeNewRapiConfig() (*domain.RapiConfig, error)
+	GetRapiConfig() (*domain.RapiConfig, error)
 }
 
-func NewConfigUsecaseImpl(files *repository.FilesRepositoryImpl) *ConfigUsecaseImpl {
+type ConfigUsecaseImpl struct {
+	files repository.FilesRepository
+}
+
+func NewConfigUsecase(files repository.FilesRepository) ConfigUsecase {
 	return &ConfigUsecaseImpl{files: files}
 }
 
