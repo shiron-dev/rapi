@@ -7,8 +7,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/shiron-dev/rapi/internal/usecase"
-	"github.com/shiron-dev/rapi/internal/usecase/cfg"
 	"github.com/spf13/cobra"
 )
 

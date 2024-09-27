@@ -9,17 +9,43 @@ import (
 )
 
 type ConfigUsecaseImpl struct {
-	Files *repository.FilesRepositoryImpl
+	files *repository.FilesRepositoryImpl
 }
 
 func NewConfigUsecaseImpl(files *repository.FilesRepositoryImpl) *ConfigUsecaseImpl {
-	return &ConfigUsecaseImpl{Files: files}
+	return &ConfigUsecaseImpl{files: files}
 }
 
-func (c *ConfigUsecaseImpl) GetOrNewRapiConfig() (*domain.RapiConfig, error) {
-	config, err := c.Files.LoadConfig()
+func (c *ConfigUsecaseImpl) ExistsRapiConfig() (bool, error) {
+	config, err := c.files.LoadConfig()
 	if err != nil {
-		if errors.Is(err, repository.ConfigNotFoundError) {
+		if errors.Is(err, repository.ErrorConfigNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return config != nil, nil
+}
+
+func (c *ConfigUsecaseImpl) MakeNewRapiConfig() (*domain.RapiConfig, error) {
+	wd, err := c.files.GetWD()
+	if err != nil {
+		return nil, err
+	}
+	config := domain.NewRapiConfig(path.Base(wd))
+	err = c.files.SaveConfig(*config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func (c *ConfigUsecaseImpl) GetRapiConfig() (*domain.RapiConfig, error) {
+	config, err := c.files.LoadConfig()
+	if err != nil {
+		if errors.Is(err, repository.ErrorConfigNotFound) {
 
 		} else {
 			return nil, err
@@ -27,12 +53,12 @@ func (c *ConfigUsecaseImpl) GetOrNewRapiConfig() (*domain.RapiConfig, error) {
 	}
 
 	if config == nil {
-		wd, err := c.Files.GetWD()
+		wd, err := c.files.GetWD()
 		if err != nil {
 			return nil, err
 		}
 		config = domain.NewRapiConfig(path.Base(wd))
-		err = c.Files.SaveConfig(*config)
+		err = c.files.SaveConfig(*config)
 		if err != nil {
 			return nil, err
 		}

@@ -5,6 +5,7 @@ package di
 
 import (
 	"github.com/google/wire"
+	"github.com/shiron-dev/rapi/internal/adapter/controller"
 	"github.com/shiron-dev/rapi/internal/adapter/repository"
 	"github.com/shiron-dev/rapi/internal/infrastructure/infra"
 	"github.com/shiron-dev/rapi/internal/usecase"
@@ -18,6 +19,10 @@ var repositorySet = wire.NewSet(
 	repository.NewLoggerRepositoryImpl,
 )
 
+var controllerSet = wire.NewSet(
+	controller.NewControllerImpl,
+)
+
 // Infrastructure
 var infrastructureSet = wire.NewSet(
 	infra.NewFilesInterfaceImpl,
@@ -28,3 +33,19 @@ var infrastructureSet = wire.NewSet(
 var usecaseSet = wire.NewSet(
 	usecase.NewConfigUsecaseImpl,
 )
+
+type ControllerSet struct {
+	ControllerImpl *controller.ControllerImpl
+}
+
+func InitializeControllerSet() (*ControllerSet, error) {
+	wire.Build(
+		cmdSet,
+		repositorySet,
+		controllerSet,
+		infrastructureSet,
+		usecaseSet,
+		wire.Struct(new(ControllerSet), "*"),
+	)
+	return &ControllerSet{}, nil
+}

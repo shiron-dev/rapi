@@ -15,17 +15,17 @@ const (
 )
 
 type FilesRepositoryImpl struct {
-	Files *infra.FilesInterfaceImpl
+	files *infra.FilesInterfaceImpl
 }
 
-var ConfigNotFoundError = errors.New("config file not found")
+var ErrorConfigNotFound = errors.New("config file not found")
 
 func NewFilesRepositoryImpl(files *infra.FilesInterfaceImpl) *FilesRepositoryImpl {
-	return &FilesRepositoryImpl{Files: files}
+	return &FilesRepositoryImpl{files: files}
 }
 
 func (c *FilesRepositoryImpl) getRapiDir() (string, error) {
-	wd, err := c.Files.GetWD()
+	wd, err := c.files.GetWD()
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func (c *FilesRepositoryImpl) getRapiDir() (string, error) {
 }
 
 func (c *FilesRepositoryImpl) GetWD() (string, error) {
-	return c.Files.GetWD()
+	return c.files.GetWD()
 }
 
 func (c *FilesRepositoryImpl) LoadConfig() (*domain.RapiConfig, error) {
@@ -43,11 +43,11 @@ func (c *FilesRepositoryImpl) LoadConfig() (*domain.RapiConfig, error) {
 	}
 
 	path := filepath.Join(rapiPath, ConfigFileName)
-	if !c.Files.Exists(path) {
-		return nil, ConfigNotFoundError
+	if !c.files.Exists(path) {
+		return nil, ErrorConfigNotFound
 	}
 
-	data, err := c.Files.ReadFile(path)
+	data, err := c.files.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func (c *FilesRepositoryImpl) SaveConfig(config domain.RapiConfig) error {
 		return err
 	}
 
-	err = c.Files.MkdirAll(rapiPath, 0755)
+	err = c.files.MkdirAll(rapiPath, 0755)
 	if err != nil {
 		return err
 	}
 
 	path := filepath.Join(rapiPath, ConfigFileName)
-	return c.Files.WriteFile(path, data, 0644)
+	return c.files.WriteFile(path, data, 0644)
 }
