@@ -1,4 +1,4 @@
-package utils
+package usecase
 
 import (
 	"os"

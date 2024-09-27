@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shiron-dev/rapi/core"
-	"github.com/shiron-dev/rapi/utils"
+	"github.com/shiron-dev/rapi/internal/usecase"
 	"github.com/spf13/cobra"
 )
 
@@ -43,10 +42,10 @@ func runUse(cmd *cobra.Command, args []string) {
 	}
 	fmt.Println("func runUse:", "mode", mode)
 
-	originPath, originAlias := utils.GetOriginName(args[0])
+	originPath, originAlias := usecase.GetOriginName(args[0])
 
 	if mode == local {
-		core.AddUseTemplate(originPath, args[1], args[2])
+		usecase.AddUseTemplate(originPath, args[1], args[2])
 	}
 	println("func runUse:", originPath, originAlias)
 }

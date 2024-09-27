@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/shiron-dev/rapi/utils"
+	"github.com/shiron-dev/rapi/internal/usecase"
 )
 
 type RapiDependenciesConfig struct {
@@ -62,7 +62,7 @@ func SaveConfig() error {
 		return err
 	}
 
-	cfgPath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	cfgPath := filepath.Join(wd, usecase.RAPI_DIR, usecase.RAPI_CONFIG)
 	return os.WriteFile(cfgPath, data, 0644)
 }
 
@@ -76,7 +76,7 @@ func NewConfig() (*RapiConfig, error) {
 		Package: RapiPackageConfig{
 			Name:    filepath.Base(wd),
 			Version: "0.1.0",
-			Recipe:  filepath.Join(utils.RAPI_DIR, utils.RAPI_RECIPE_DIR),
+			Recipe:  filepath.Join(usecase.RAPI_DIR, usecase.RAPI_RECIPE_DIR),
 		},
 		Rapi: RapiCLIConfig{
 			RapiVersion: "0.1.0", // TODO: get version from rapi

@@ -1,31 +1,30 @@
-package core
+package usecase
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/shiron-dev/rapi/utils"
-	"github.com/shiron-dev/rapi/utils/cfg"
-	"github.com/shiron-dev/rapi/utils/run"
+	"github.com/shiron-dev/rapi/internal/infrastructure/run"
+	"github.com/shiron-dev/rapi/internal/usecase/cfg"
 )
 
 func downloadOrigin(origin string) {
-	wd, err := utils.GetRapiWorkingDir()
+	wd, err := GetRapiWorkingDir()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	_, originAlias := utils.GetOriginName(origin)
+	_, originAlias := GetOriginName(origin)
 
-	packagePath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_PACKAGE_DIR, originAlias)
+	packagePath := filepath.Join(wd, RAPI_DIR, RAPI_PACKAGE_DIR, originAlias)
 
 	if _, err := os.Stat(packagePath); err != nil {
 		os.MkdirAll(packagePath, 0755)
 	}
 
-	run.GitClone(utils.OriginToUrl(origin), packagePath, 1)
+	run.GitClone(OriginToUrl(origin), packagePath, 1)
 }
 
 func AddUseTemplate(origin string, template string, local string) {
@@ -72,7 +71,7 @@ func addOriginDependency(origin string) {
 	if dep != nil {
 		return
 	}
-	originName, originAlias := utils.GetOriginName(origin)
+	originName, originAlias := GetOriginName(origin)
 	cfg.Config.Dependencies = append(cfg.Config.Dependencies, cfg.RapiDependency{
 		Origin:   originName,
 		Alias:    originAlias,

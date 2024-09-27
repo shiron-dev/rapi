@@ -7,9 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/shiron-dev/rapi/files"
-	"github.com/shiron-dev/rapi/utils"
-	"github.com/shiron-dev/rapi/utils/cfg"
+	"github.com/shiron-dev/rapi/internal/usecase"
+	"github.com/shiron-dev/rapi/internal/usecase/cfg"
 	"github.com/spf13/cobra"
 )
 
@@ -31,13 +30,13 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 	fmt.Println("Set up a Rapi in", wd)
 
-	cfgPath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	cfgPath := filepath.Join(wd, usecase.RAPI_DIR, usecase.RAPI_CONFIG)
 	if _, err := os.Stat(cfgPath); err == nil {
 		fmt.Println("Already initialized")
 		os.Exit(0)
 	}
 
-	tmpl, err := template.New(cfgPath).Parse(string(files.RapiYaml))
+	tmpl, err := template.New(cfgPath).Parse(string(usecase.RapiYaml))
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +50,7 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	fmt.Println("Wrote to", cfgPath)
 
-	if err := os.MkdirAll(filepath.Join(wd, utils.RAPI_DIR), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(wd, usecase.RAPI_DIR), 0755); err != nil {
 		panic(err)
 	}
 	f, err := os.Create(cfgPath)
@@ -64,13 +63,13 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 	println("\n" + writer.String())
 
-	ignorePath := filepath.Join(wd, utils.RAPI_DIR, ".gitignore")
+	ignorePath := filepath.Join(wd, usecase.RAPI_DIR, ".gitignore")
 	f, err = os.Create(ignorePath)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	if _, err := f.Write([]byte(files.GitIgnore)); err != nil {
+	if _, err := f.Write([]byte(usecase.GitIgnore)); err != nil {
 		panic(err)
 	}
 
