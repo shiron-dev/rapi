@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/shiron-dev/rapi/utils"
-	"github.com/shiron-dev/rapi/utils/cfg"
+	"github.com/shiron-dev/rapi/internal/usecase"
+	"github.com/shiron-dev/rapi/internal/usecase/cfg"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -40,8 +40,8 @@ func init() {
 }
 
 func initConfig() {
-	wr, _ := utils.GetRapiWorkingDir()
-	cfgPath := filepath.Join(wr, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	wr, _ := usecase.GetRapiWorkingDir()
+	cfgPath := filepath.Join(wr, usecase.RAPI_DIR, usecase.RAPI_CONFIG)
 
 	cfgData, err := os.ReadFile(cfgPath)
 	if err != nil {
@@ -62,7 +62,7 @@ func presistPreRun(cmd *cobra.Command, args []string) {
 	}
 
 	wd, _ := os.Getwd()
-	cfgPath := filepath.Join(wd, utils.RAPI_DIR, utils.RAPI_CONFIG)
+	cfgPath := filepath.Join(wd, usecase.RAPI_DIR, usecase.RAPI_CONFIG)
 	if _, err := os.Stat(cfgPath); err != nil {
 		fmt.Fprintln(os.Stderr, "No config file found.")
 		fmt.Fprintln(os.Stderr, "Please run `rapi init` to create a new config file.")
