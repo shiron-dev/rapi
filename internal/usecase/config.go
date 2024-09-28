@@ -23,7 +23,13 @@ func NewConfigUsecase(files repository.FilesRepository) ConfigUsecase {
 }
 
 func (c *ConfigUsecaseImpl) ExistsRapiConfig() (bool, error) {
-	config, err := c.files.LoadConfig()
+	rapiPath, err := c.files.GetRapiDir()
+	if err != nil {
+		return false, err
+	}
+	cfgPath := path.Join(rapiPath, repository.ConfigFileName)
+
+	config, err := c.files.LoadConfig(cfgPath)
 	if err != nil {
 		if errors.Is(err, repository.ErrorConfigNotFound) {
 			return false, nil
@@ -40,7 +46,8 @@ func (c *ConfigUsecaseImpl) MakeNewRapiConfig() (*domain.RapiConfig, error) {
 		return nil, err
 	}
 	config := domain.NewRapiConfig(path.Base(wd))
-	err = c.files.SaveConfig(*config)
+	path := path.Join(wd, repository.RapiDirName, repository.ConfigFileName)
+	err = c.files.SaveConfig(path, *config)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +56,13 @@ func (c *ConfigUsecaseImpl) MakeNewRapiConfig() (*domain.RapiConfig, error) {
 }
 
 func (c *ConfigUsecaseImpl) GetRapiConfig() (*domain.RapiConfig, error) {
-	config, err := c.files.LoadConfig()
+	rapiDir, err := c.files.GetRapiDir()
+	if err != nil {
+		return nil, err
+	}
+	cfgPath := path.Join(rapiDir, repository.ConfigFileName)
+
+	config, err := c.files.LoadConfig(cfgPath)
 	if err != nil {
 		if errors.Is(err, repository.ErrorConfigNotFound) {
 
@@ -64,7 +77,7 @@ func (c *ConfigUsecaseImpl) GetRapiConfig() (*domain.RapiConfig, error) {
 			return nil, err
 		}
 		config = domain.NewRapiConfig(path.Base(wd))
-		err = c.files.SaveConfig(*config)
+		err = c.files.SaveConfig(cfgPath, *config)
 		if err != nil {
 			return nil, err
 		}

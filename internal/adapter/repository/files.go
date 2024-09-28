@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"os"
 	"path/filepath"
 
 	"github.com/shiron-dev/rapi/internal/domain"
@@ -15,9 +16,11 @@ const (
 )
 
 type FilesRepository interface {
+	GetRapiDir() (string, error)
 	GetWD() (string, error)
-	LoadConfig() (*domain.RapiConfig, error)
-	SaveConfig(config domain.RapiConfig) error
+	MkdirAll(path string, perm os.FileMode) error
+	LoadConfig(path string) (*domain.RapiConfig, error)
+	SaveConfig(path string, config domain.RapiConfig) error
 	WriteFileRapiDir(filename string, data []byte) (string, error)
 }
 
@@ -31,11 +34,24 @@ func NewFilesRepository(files infra.FilesInterface) FilesRepository {
 	return &FilesRepositoryImpl{files: files}
 }
 
-func (c *FilesRepositoryImpl) getRapiDir() (string, error) {
+func (c *FilesRepositoryImpl) GetRapiDir() (string, error) {
 	wd, err := c.files.GetWD()
 	if err != nil {
 		return "", err
 	}
+
+	for {
+		if c.files.Exists(filepath.Join(wd, RapiDirName, ConfigFileName)) {
+			break
+		}
+
+		parent := filepath.Dir(wd)
+		if parent == wd {
+			return "", ErrorConfigNotFound
+		}
+		wd = parent
+	}
+
 	return filepath.Join(wd, RapiDirName), nil
 }
 
@@ -43,13 +59,11 @@ func (c *FilesRepositoryImpl) GetWD() (string, error) {
 	return c.files.GetWD()
 }
 
-func (c *FilesRepositoryImpl) LoadConfig() (*domain.RapiConfig, error) {
-	rapiPath, err := c.getRapiDir()
-	if err != nil {
-		return nil, err
-	}
+func (c *FilesRepositoryImpl) MkdirAll(path string, perm os.FileMode) error {
+	return c.files.MkdirAll(path, perm)
+}
 
-	path := filepath.Join(rapiPath, ConfigFileName)
+func (c *FilesRepositoryImpl) LoadConfig(path string) (*domain.RapiConfig, error) {
 	if !c.files.Exists(path) {
 		return nil, ErrorConfigNotFound
 	}
@@ -68,13 +82,13 @@ func (c *FilesRepositoryImpl) LoadConfig() (*domain.RapiConfig, error) {
 	return &config, nil
 }
 
-func (c *FilesRepositoryImpl) SaveConfig(config domain.RapiConfig) error {
+func (c *FilesRepositoryImpl) SaveConfig(path string, config domain.RapiConfig) error {
 	data, err := yaml.Marshal(config)
 	if err != nil {
 		return err
 	}
 
-	rapiPath, err := c.getRapiDir()
+	rapiPath, err := c.GetRapiDir()
 	if err != nil {
 		return err
 	}
@@ -84,12 +98,11 @@ func (c *FilesRepositoryImpl) SaveConfig(config domain.RapiConfig) error {
 		return err
 	}
 
-	path := filepath.Join(rapiPath, ConfigFileName)
 	return c.files.WriteFile(path, data, 0644)
 }
 
 func (c *FilesRepositoryImpl) WriteFileRapiDir(filename string, data []byte) (string, error) {
-	rapiPath, err := c.getRapiDir()
+	rapiPath, err := c.GetRapiDir()
 	if err != nil {
 		return "", err
 	}

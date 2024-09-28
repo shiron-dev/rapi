@@ -24,7 +24,7 @@ func InitializeControllerSet() (*ControllersSet, error) {
 	loggerInterface := infra.NewLoggerInterface()
 	loggerRepository := repository.NewLoggerRepository(loggerInterface)
 	loggerUsecase := usecase.NewLoggerUsecase(loggerRepository)
-	coreUsecase := usecase.NewCoreUsecase(configUsecase, filesUsecase, loggerUsecase)
+	coreUsecase := usecase.NewCoreUsecase(configUsecase, filesUsecase, loggerUsecase, filesRepository)
 	controllerController := controller.NewController(coreUsecase, configUsecase, loggerUsecase, filesUsecase)
 	controllersSet := &ControllersSet{
 		Controller: controllerController,
