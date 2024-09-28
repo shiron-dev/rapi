@@ -19,6 +19,7 @@ var repositorySet = wire.NewSet(
 
 var controllerSet = wire.NewSet(
 	controller.NewController,
+	controller.NewCoreController,
 )
 
 // Infrastructure
@@ -29,7 +30,6 @@ var infrastructureSet = wire.NewSet(
 
 // Usecase
 var usecaseSet = wire.NewSet(
-	usecase.NewCoreUsecase,
 	usecase.NewConfigUsecase,
 	usecase.NewFilesUsecase,
 	usecase.NewLoggerUsecase,

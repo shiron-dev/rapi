@@ -16,8 +16,8 @@ const (
 )
 
 type FilesRepository interface {
-	GetRapiDir() (string, error)
 	GetWD() (string, error)
+	GetRapiDir() (string, error)
 	MkdirAll(path string, perm os.FileMode) error
 	LoadConfig(path string) (*domain.RapiConfig, error)
 	SaveConfig(path string, config domain.RapiConfig) error
