@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/shiron-dev/rapi/configs"
 	"github.com/shiron-dev/rapi/internal/adapter/repository"
+	"github.com/shiron-dev/rapi/internal/domain"
 )
 
 type FilesUsecase interface {
@@ -37,7 +37,7 @@ func (f *FilesUsecaseImpl) MakeRapiDir() (string, error) {
 		return "", err
 	}
 
-	path := path.Join(wd, repository.RapiDirName)
+	path := path.Join(wd, domain.RapiDirName)
 	err = f.files.MkdirAll(path, 0755)
 	if err != nil {
 		return "", err
@@ -46,8 +46,6 @@ func (f *FilesUsecaseImpl) MakeRapiDir() (string, error) {
 }
 
 func (f *FilesUsecaseImpl) MakeIgnoreFile() error {
-	fmt.Println(configs.GitIgnore)
-	fmt.Println("MakeIgnoreFile")
 	_, err := f.files.WriteFileRapiDir("/.gitignore", configs.GitIgnore)
 	if err != nil {
 		return err

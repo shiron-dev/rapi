@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"errors"
 	"os"
 
+	"github.com/shiron-dev/rapi/internal/adapter/repository"
 	"github.com/shiron-dev/rapi/internal/usecase"
 )
 
@@ -22,7 +24,7 @@ func NewCoreController(config usecase.ConfigUsecase, files usecase.FilesUsecase,
 
 func (c *CoreControllerImpl) InitRapi() error {
 	ok, err := c.config.ExistsRapiConfig()
-	if err != nil {
+	if err != nil && !errors.Is(err, repository.ErrorConfigNotFound) {
 		c.logger.ErrorWithErr(err)
 	}
 	if ok {

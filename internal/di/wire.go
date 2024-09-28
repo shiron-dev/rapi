@@ -33,6 +33,7 @@ var usecaseSet = wire.NewSet(
 	usecase.NewConfigUsecase,
 	usecase.NewFilesUsecase,
 	usecase.NewLoggerUsecase,
+	usecase.NewPackageUsecase,
 )
 
 type ControllersSet struct {

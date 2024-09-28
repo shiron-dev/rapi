@@ -10,11 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const (
-	RapiDirName    = ".rapi"
-	ConfigFileName = "rapi.yaml"
-)
-
 type FilesRepository interface {
 	GetWD() (string, error)
 	GetRapiDir() (string, error)
@@ -41,7 +36,7 @@ func (c *FilesRepositoryImpl) GetRapiDir() (string, error) {
 	}
 
 	for {
-		if c.files.Exists(filepath.Join(wd, RapiDirName, ConfigFileName)) {
+		if c.files.Exists(filepath.Join(wd, domain.RapiDirName, domain.ConfigFileName)) {
 			break
 		}
 
@@ -52,7 +47,7 @@ func (c *FilesRepositoryImpl) GetRapiDir() (string, error) {
 		wd = parent
 	}
 
-	return filepath.Join(wd, RapiDirName), nil
+	return filepath.Join(wd, domain.RapiDirName), nil
 }
 
 func (c *FilesRepositoryImpl) GetWD() (string, error) {
@@ -84,16 +79,6 @@ func (c *FilesRepositoryImpl) LoadConfig(path string) (*domain.RapiConfig, error
 
 func (c *FilesRepositoryImpl) SaveConfig(path string, config domain.RapiConfig) error {
 	data, err := yaml.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	rapiPath, err := c.GetRapiDir()
-	if err != nil {
-		return err
-	}
-
-	err = c.files.MkdirAll(rapiPath, 0755)
 	if err != nil {
 		return err
 	}

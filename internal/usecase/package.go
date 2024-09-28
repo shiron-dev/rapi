@@ -1,81 +1,94 @@
 package usecase
 
-// import (
-// 	"fmt"
-// 	"os"
-// 	"path/filepath"
+import (
+	"errors"
+	"regexp"
+	"strings"
 
-// 	"github.com/shiron-dev/rapi/internal/infrastructure/run"
-// 	"github.com/shiron-dev/rapi/internal/usecase/cfg"
-// )
+	"github.com/shiron-dev/rapi/internal/domain"
+)
 
-// func downloadOrigin(origin string) {
-// 	wd, err := GetRapiWorkingDir()
-// 	if err != nil {
-// 		fmt.Fprintln(os.Stderr, err)
-// 		os.Exit(1)
-// 	}
+type PackageUsecase interface {
+	MakeRapiDependencyObj(config *domain.RapiConfig, name string, path string, params map[string]string) error
+}
 
-// 	_, originAlias := GetOriginName(origin)
+type PackageUsecaseImpl struct {
+}
 
-// 	packagePath := filepath.Join(wd, RAPI_DIR, RAPI_PACKAGE_DIR, originAlias)
+var ErrorInvalidDependencyName = errors.New("Invalid dependency name")
+var ErrorDuplicateDependency = errors.New("Duplicate dependency")
+var ErrorUnknownDependency = errors.New("Unknown dependency")
 
-// 	if _, err := os.Stat(packagePath); err != nil {
-// 		os.MkdirAll(packagePath, 0755)
-// 	}
+func NewPackageUsecase() PackageUsecase {
+	return &PackageUsecaseImpl{}
+}
 
-// 	run.GitClone(OriginToUrl(origin), packagePath, 1)
-// }
+func removeScheme(name string) string {
+	re := regexp.MustCompile(`^[a-zA-Z]+://`)
+	return re.ReplaceAllString(name, "")
+}
 
-// func AddUseTemplate(origin string, template string, local string) {
-// 	// TODO: aliasの考慮
-// 	dep := getOriginDependency(origin)
-// 	if dep == nil {
-// 		addOriginDependency(origin)
-// 		dep = getOriginDependency(origin)
-// 	}
-// 	if dep == nil {
-// 		fmt.Fprintln(os.Stderr, "Failed to add dependency")
-// 		os.Exit(1)
-// 	}
+func (p *PackageUsecaseImpl) getOriginDepsName(name string) (string, string, error) {
+	name = removeScheme(name)
+	name = strings.TrimPrefix(name, "/")
+	name = strings.TrimSuffix(name, "/")
 
-// 	// BUG: 配列のポインタだと参照しない？
-// 	dep.Template = append(dep.Template, cfg.RapiDependenciesConfig{
-// 		Name:       template,
-// 		Path:       local,
-// 		Follow:     true,
-// 		AutoUpdate: true,
-// 		NoParam:    false,
-// 	})
+	parts := strings.Split(name, "/")
+	if !strings.Contains(parts[0], ".") {
+		parts = append([]string{domain.OriginDefaultHost}, parts...)
+	}
 
-// 	fmt.Printf("XXXX %+v\n", dep.Template)
+	if len(parts) < 3 {
+		return "", "", ErrorInvalidDependencyName
+	}
 
-// 	err := cfg.SaveConfig()
-// 	if err != nil {
-// 		fmt.Fprintln(os.Stderr, err)
-// 		os.Exit(1)
-// 	}
-// }
+	prefix := strings.Join(parts[:3], "/")
+	suffix := strings.Join(parts[3:], "/")
 
-// func getOriginDependency(origin string) *cfg.RapiDependency {
-// 	for _, dep := range cfg.Config.Dependencies {
-// 		if dep.Origin == origin {
-// 			return &dep
-// 		}
-// 	}
-// 	return nil
-// }
+	return prefix, suffix, nil
+}
 
-// func addOriginDependency(origin string) {
-// 	dep := getOriginDependency(origin)
-// 	if dep != nil {
-// 		return
-// 	}
-// 	originName, originAlias := GetOriginName(origin)
-// 	cfg.Config.Dependencies = append(cfg.Config.Dependencies, cfg.RapiDependency{
-// 		Origin:   originName,
-// 		Alias:    originAlias,
-// 		Template: []cfg.RapiDependenciesConfig{},
-// 	})
-// 	downloadOrigin(origin)
-// }
+func (p *PackageUsecaseImpl) MakeRapiDependencyObj(config *domain.RapiConfig, name string, path string, params map[string]string) error {
+	origin, oPath, err := p.getOriginDepsName(name)
+	if err != nil {
+		return ErrorInvalidDependencyName
+	}
+	if oPath == "" {
+		return ErrorInvalidDependencyName
+	}
+
+	if path == "" {
+		path = oPath
+	}
+
+	deps := config.Dependencies.Templates[origin]
+	if deps == nil {
+		deps = &domain.RapiDependencyOrigin{
+			Origin: origin,
+		}
+		config.Dependencies.Templates[origin] = deps
+	}
+
+	parts := strings.Split(path, "/")
+	depsPath := config.Dependencies.Paths
+	for i, part := range parts {
+		if i != len(parts)-1 {
+			if depsPath.Paths[part] == nil {
+				depsPath.Paths[part] = &domain.RapiDependencyPath{}
+			}
+			depsPath = depsPath.Paths[part]
+		} else {
+			if depsPath.Files[part] != nil {
+				return ErrorDuplicateDependency
+			}
+
+			depsPath.Files[part] = &domain.RapiDependencyPathTemplate{
+				Origin: origin,
+				Url:    path,
+			}
+			return nil
+		}
+	}
+
+	return ErrorUnknownDependency
+}
